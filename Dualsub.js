@@ -47,6 +47,8 @@
         GitHub: Neurogram-R
 */
 
+const STORAGE_KEY = 'dualsub_settings'
+
 let url = $request.url
 let headers = $request.headers
 
@@ -173,7 +175,7 @@ let default_settings = {
     }
 }
 
-let settings = $persistentStore.read()
+let settings = $persistentStore.read(STORAGE_KEY)
 
 if (!settings) settings = default_settings
 
@@ -231,7 +233,7 @@ if (url.match(/action=set/)) {
     if (new_setting.subtitles_tl) settings[service].subtitles_tl = new_setting.subtitles_tl
     if (new_setting.subtitles_line) settings[service].subtitles_line = new_setting.subtitles_line
     if (new_setting.external_subtitles) settings[service].external_subtitles = new_setting.external_subtitles.replace(/\r/g, "")
-    $persistentStore.write(JSON.stringify(settings))
+    $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
     delete settings[service].t_subtitles_url
     delete settings[service].subtitles
     delete settings[service].external_subtitles
@@ -288,7 +290,7 @@ let subtitles_urls_data = setting.t_subtitles_url
 
 if (setting.type == "Official" && url.match(/\.m3u8/)) {
     settings[service].t_subtitles_url = "null"
-    $persistentStore.write(JSON.stringify(settings))
+    $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
 
     let patt = new RegExp(`TYPE=SUBTITLES.+NAME="${setting.tl.replace(/(\[|\]|\(|\))/g, "\\$1")}.+URI="([^"]+)`)
 
@@ -322,14 +324,14 @@ if (setting.type == "Official" && url.match(/\.m3u8/)) {
                 subtitles_data = subtitles_data.join("\n")
                 if (service == "Disney" || service == "PrimeVideo") subtitles_data = subtitles_data.replace(/(.+)/g, `${host}$1`)
                 settings[service].t_subtitles_url = subtitles_data
-                $persistentStore.write(JSON.stringify(settings))
+                $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
             }
 
             if (service == "Disney" && subtitles_data_link.match(/.+-MAIN.+/) && data.match(/,\nseg.+\.vtt/g)) {
                 subtitles_data = data.match(/,\nseg.+\.vtt/g)
                 let url_path = subtitles_data_link.match(/\/r\/(.+)/)[1].replace(/\w+\.m3u8/, "")
                 settings[service].t_subtitles_url = subtitles_data.join("\n").replace(/,\n/g, hots + url_path)
-                $persistentStore.write(JSON.stringify(settings))
+                $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
             }
 
             $done({})
@@ -455,7 +457,7 @@ async function machine_subtitles(type) {
             settings[service].subtitles_sl = setting.sl
             settings[service].subtitles_tl = setting.tl
             settings[service].subtitles_line = setting.line
-            $persistentStore.write(JSON.stringify(settings))
+            $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
         }
     }
 
@@ -512,7 +514,7 @@ async function official_subtitles(subtitles_urls_data) {
     settings[service].subtitles_sl = setting.sl
     settings[service].subtitles_tl = setting.tl
     settings[service].subtitles_line = setting.line
-    $persistentStore.write(JSON.stringify(settings))
+    $persistentStore.write(JSON.stringify(settings), STORAGE_KEY)
 
     $done({ body })
 }
