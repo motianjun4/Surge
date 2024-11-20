@@ -52,10 +52,10 @@ let headers = $request.headers
 
 let default_settings = {
     Disney: {
-        type: "Official", // Official, Google, DeepL, External, Disable
-        lang: "English [CC]",
+        type: "Google", // Google, DeepL, External, Disable
+        lang: "English",
         sl: "auto",
-        tl: "English [CC]",
+        tl: "en",
         line: "s", // f, s
         dkey: "null", // DeepL API key
         s_subtitles_url: "null",
